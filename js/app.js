@@ -7132,7 +7132,7 @@
             constructor({triggers, popupSelector, closeSelector, activeClass}) {
                 this.btns = document.querySelectorAll(triggers);
                 this.popup = document.querySelector(popupSelector);
-                this.close = this.popup.querySelector(closeSelector);
+                if (this.popup) this.close = this.popup.querySelector(closeSelector);
                 this.activeClass = activeClass;
                 this.scroll = calcScroll();
             }
@@ -7161,7 +7161,7 @@
                 document.addEventListener("keydown", (e => {
                     if (e.key === "Escape") this.closeVideo();
                 }));
-                this.close.addEventListener("click", (() => {
+                if (this.close) this.close.addEventListener("click", (() => {
                     this.closeVideo();
                 }));
             }
@@ -7197,8 +7197,10 @@
                     tag.src = "https://www.youtube.com/iframe_api";
                     const firstScriptTag = document.getElementsByTagName("script")[0];
                     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-                    this.bindTriggers();
-                    this.bindClose();
+                    try {
+                        this.bindTriggers();
+                        this.bindClose();
+                    } catch (e) {}
                 }
             }
         }
@@ -7245,21 +7247,27 @@
         const cookieConsent = CookieConsent;
         window.addEventListener("DOMContentLoaded", (() => {
             isWebp();
-            menuInit();
+            try {
+                menuInit();
+            } catch (e) {}
             formFieldsInit({
                 autoHeight: true
             });
             formSubmit();
-            new playVideo({
-                triggers: ".hero__play",
-                popupSelector: ".popup",
-                closeSelector: ".popup__close",
-                activeClass: "popup--open"
-            }).init();
-            new cookieConsent({
-                popupSelector: ".cookie-popup",
-                activePopupClass: "cookie-popup--active"
-            }).init();
+            try {
+                new playVideo({
+                    triggers: ".hero__play",
+                    popupSelector: ".popup",
+                    closeSelector: ".popup__close",
+                    activeClass: "popup--open"
+                }).init();
+            } catch (e) {}
+            try {
+                new cookieConsent({
+                    popupSelector: ".cookie-popup",
+                    activePopupClass: "cookie-popup--active"
+                }).init();
+            } catch (e) {}
         }));
     })();
 })();
